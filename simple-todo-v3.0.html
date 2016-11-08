@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<style type="text/css">
+			[v-cloak] {
+				display: none;
+			}
+			
+			html,
+			body,
+			p,
+			div,
+			ul,
+			li {
+				margin: 0;
+				padding: 0;
+			}
+			
+			p {
+				line-height: 1.5;
+			}
+			
+			#todo {
+				margin-top: 30px;
+				margin-left: 30px;
+			}
+			
+			.line {
+				margin-top: 20px;
+				font-size: 20px;
+			}
+			
+			.hint {
+				color: #ccc;
+				font-size: 14px;
+			}
+			
+			li {
+				color: #333;
+			}
+			
+			.cancelled li {
+				color: #999;
+			}
+			
+			textarea {
+				resize:none;
+				outline: none;
+				border: none;				
+				vertical-align: top;
+			}
+			textarea:focus{
+				border: 1px solid #eee;
+			}
+		</style>
+	</head>
+
+	<body>
+		<div id="todo" v-cloak>
+			<input type="text" placeholder="please input..." v-model="newTodo" @keyup.enter="addNewTodo" /><button @click="addNewTodo">add</button>
+			<p class="line">代办事件列表：</p>
+			<p class="hint">（点击文字内容可修改）</p>
+			<ul>
+				<li v-for="(todo,index) in todos">
+					<button @click="completeTodo(index)">√</button>
+					<textarea contenteditable  @blur="editTodo(todo.content,index)"  @keydown.enter.prevent="editTodo(todo.content,index,'enter')" v-model="todo.content"> </textarea>
+					<button @click="removeTodo(index)">x</button>
+				</li>
+			</ul>
+			<p class="line">已完成事件列表：</p>
+			<ul>
+				<li v-for="havedone in thingsHavedone">
+					{{havedone.content}}
+				</li>
+			</ul>
+			<p class="line">已删除事件列表：</p>
+			<ul class="cancelled">
+				<li v-for="cancelled in thingsCancelled">
+					{{cancelled.content}}
+				</li>
+			</ul>
+		</div>
+
+		<script src="js/vue.js"></script>
+		<script type="text/javascript">
+			var todos = new Vue({
+				el: '#todo',
+				data: {
+					todos: [{
+						content: '学习 Vue,做一个简单的 todo'
+					}, {
+						content: '增加双击修改内容功能'
+					}, {
+						content: '双击文字，测试这个功能'
+					}],
+					newTodo: '',
+					thingsHavedone: [],
+					thingsCancelled: []
+				},
+				methods: {
+					addNewTodo: function() {
+						this.todos.push({
+							content: this.newTodo
+						});
+						this.newTodo = ''
+					},
+					removeTodo: function(index) {
+						var thing = this.todos.splice(index, 1);
+						console.log(JSON.stringify(thing));
+						this.thingsCancelled.push(thing[0])
+					},
+					completeTodo: function(index) {
+						var thing = this.todos.splice(index, 1);
+						this.thingsHavedone.push(thing[0])
+					},
+					editTodo: function(content, index,enter) {
+						console.log(content);
+						this.todos[index].content = content;
+						if(enter){
+							//还没做完，明天再弄
+							//onblur的弄好了， 回车，怎么让元素失去焦点？
+							//写在 methods 里？
+							//数据逻辑不应该和视图层耦合？
+							
+						}
+					}
+				}
+			})
+		</script>
+	</body>
+
+</html>
